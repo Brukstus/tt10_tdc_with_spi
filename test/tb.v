@@ -29,7 +29,7 @@ module tb ();
 `endif
 
   // Replace tt_um_example with your module name:
-  tt_um_mattvenn_spi_test user_project (
+  tt_um_brukstus_tdc_with_spi user_project (
 
       // Include power ports for the Gate Level test:
 `ifdef GL_TEST
