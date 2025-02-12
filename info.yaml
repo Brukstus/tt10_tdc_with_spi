@@ -1,14 +1,14 @@
 # Tiny Tapeout project information
 project:
-  title:        "SPI test"      # Project title
-  author:       "Matt Venn"      # Your name
-  discord:      "mattvenn"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "SPI test design"      # One line description of what your project does
+  title:        "TDC with SPI"      # Project title
+  author:       "Tautvydas Brukstus"      # Your name
+  discord:      "Brukstus"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
+  description:  "TDC with SPI design"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     50000000      # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
+  tiles: "1x2"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
   top_module:  "tt_um_mattvenn_spi_test"
@@ -17,7 +17,7 @@ project:
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:        
-    - "tt_um_mattvenn_spi_test.v"
+    - "tt_um_brukstus_tdc_with_spi.v"
     - "synchronizer.sv"
     - "spi_wrapper.sv"
     - "spi_reg.sv"
