@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Caio Alonso da Costa
- * Design copied from https://github.com/calonso88/tt07_alu_74181
+ * SPI Design copied from https://github.com/calonso88/tt07_alu_74181
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -15,7 +15,7 @@ module tt_um_brukstus_tdc_with_spi (
     input  wire       ena,      // always 1 when the design is powered, so you can ignore it
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
-);
+  );
 
   // SPI Auxiliars
   wire spi_cs_n;
@@ -24,7 +24,7 @@ module tt_um_brukstus_tdc_with_spi (
   wire spi_mosi;
   wire cpol;
   wire cpha;
-    
+
   // Sync'ed
   wire spi_cs_n_sync;
   wire spi_clk_sync;
@@ -37,7 +37,7 @@ module tt_um_brukstus_tdc_with_spi (
   // Bi direction IOs [7] and [3:0] as outputs
   assign uio_oe[7]   = 1'b1;
   assign uio_oe[3:0] = 4'b1111;
-  assign uo_out = 8'b0;
+  assign uo_out[7:1] = 7'b0;
 
   // Input ports
   assign cpol      = ui_in[0];
@@ -64,27 +64,38 @@ module tt_um_brukstus_tdc_with_spi (
   synchronizer #(.STAGES(SYNC_STAGES), .WIDTH(SYNC_WIDTH)) synchronizer_spi_mode_cpha (.rstb(rst_n), .clk(clk), .ena(ena), .data_in(cpha), .data_out(cpha_sync));
 
   // Amount of CFG Regs and Status Regs + Regs Width
-  localparam int NUM_CFG = 2;
+  localparam int NUM_CFG = 4;
   localparam int NUM_STATUS = NUM_CFG;
-  localparam int REG_WIDTH = 8;
+  localparam int REG_WIDTH = 32;
 
   // Config Regs and Status Regs
   wire [NUM_CFG*REG_WIDTH-1:0] config_regs;
   wire [NUM_STATUS*REG_WIDTH-1:0] status_regs;
 
+  wire [31:0] coarse_result;
+  wire [8:0] fine_result;
+
   // todo - set these to be some read only part of your design
-  assign status_regs[7:0]   = 0; // [0][7:0]
-  assign status_regs[15:8]  = 0; // [1][7:0]
-  assign status_regs[19:16] = 0; // [2][3:0]
-  assign status_regs[23:20] = 4'h0; // [2][7:4]
-  assign status_regs[31:24] = 0; // [3][7:0]
-  assign status_regs[39:32] = 8'hC4;
-  assign status_regs[47:40] = 8'h10;
-  assign status_regs[55:48] = 8'h55;
-  assign status_regs[63:56] = 0; // [7][7:0]
+  assign status_regs[31:0]   = 32'h78B36425;
+  assign status_regs[63:32]  = 32'hDEADBEEF;
+  assign status_regs[95:64] = coarse_result;
+  assign status_regs[127:96] = {23'b0, fine_result};
+
 
   // SPI wrapper
   spi_wrapper #(.NUM_CFG(NUM_CFG), .NUM_STATUS(NUM_STATUS), .REG_WIDTH(REG_WIDTH)) spi_wrapper_i (.rstb(rst_n), .clk(clk), .ena(ena), .mode({cpol_sync, cpha_sync}), .spi_cs_n(spi_cs_n_sync), .spi_clk(spi_clk_sync), .spi_mosi(spi_mosi_sync), .spi_miso(spi_miso), .config_regs(config_regs), .status_regs(status_regs));
+
+  // TDC part.
+  tdc tdc_inst (
+        .clk(clk),
+        .rst_n(rst_n),
+        .sampling_clk(ui_in[2]),
+        .start_signal(ui_in[3]),
+        .stop_signal(ui_in[4]),
+        .busy(uo_out[0]),
+        .coarse_result(coarse_result),
+        .fine_result(fine_result)
+      );
 
 
 endmodule

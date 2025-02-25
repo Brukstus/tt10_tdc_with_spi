@@ -24,21 +24,22 @@ project:
     - "falling_edge_detector.sv"
     - "rising_edge_detector.sv"
     - "reclocking.sv"
+    - "tdc.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
   # Inputs
   ui[0]: "cpol"
   ui[1]: "cpha"
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
+  ui[2]: "smapling_clk"
+  ui[3]: "start_signal"
+  ui[4]: "stop_signal"
   ui[5]: ""
   ui[6]: ""
   ui[7]: ""
 
   # Outputs
-  uo[0]: ""
+  uo[0]: "busy"
   uo[1]: ""
   uo[2]: ""
   uo[3]: ""
