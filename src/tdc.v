@@ -1,11 +1,11 @@
 `default_nettype none
 
 module tdc  (
-    input clk,
-    input rst_n,
-    input sampling_clk,
-    input start_signal,
-    input stop_signal,
+    input wire clk,
+    input wire rst_n,
+    input wire sampling_clk,
+    input wire start_signal,
+    input wire stop_signal,
     output wire busy,
     output reg [31:0] coarse_result,
     output reg [8:0] fine_result
