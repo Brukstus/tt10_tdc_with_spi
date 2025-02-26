@@ -88,7 +88,7 @@ module tdc  (
     end
   end
 
-  always @(posedge clk )
+  always @(posedge clk or posedge rst_n)
   begin
     if(!rst_n)
     begin
@@ -112,12 +112,12 @@ module tdc  (
       else
       begin
         tdc_xor_result <=  tdc_xor_result >> 1;
-        fine_another_counter <= fine_another_counter + tdc_xor_result[0];
+        fine_another_counter <= fine_another_counter + {8'b0, tdc_xor_result[0]};
 
         start_count_debug <= start_count_debug >> 1;
         stop_count_debug <= stop_count_debug >> 1;
-        fine_start_counter <= fine_start_counter + start_count_debug[0];
-        fine_stop_counter <= fine_stop_counter + stop_count_debug[0];
+        fine_start_counter <= fine_start_counter + {8'b0, start_count_debug[0]};
+        fine_stop_counter <= fine_stop_counter + {8'b0, stop_count_debug[0]};
 
         positions_sum <= fine_start_counter + fine_stop_counter;
       end

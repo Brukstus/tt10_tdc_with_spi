@@ -6,7 +6,7 @@
 module spi_reg #(
     parameter int ADDR_W = 3,
     parameter int REG_W = 8
-) (
+  ) (
     input  logic clk,
     input  logic rstb,
     input  logic ena,
@@ -19,8 +19,8 @@ module spi_reg #(
     input  logic [REG_W-1:0] reg_data_i,
     output logic [REG_W-1:0] reg_data_o,
     output logic reg_data_o_dv,
-    input  logic [7:0] status
-);
+    input  logic [31:0] status
+  );
 
   // Map to outputs
   assign reg_addr = addr;
@@ -59,25 +59,31 @@ module spi_reg #(
   logic spi_data_change;
 
   // Assert according to SPI Config
-  always_comb begin
-      case ( mode )
-      2'b00 : begin
+  always_comb
+  begin
+    case ( mode )
+      2'b00 :
+      begin
         spi_data_sample = spi_clk_pos_gated;
         spi_data_change = spi_clk_neg_gated;
       end
-      2'b01 : begin
+      2'b01 :
+      begin
         spi_data_sample = spi_clk_neg_gated;
         spi_data_change = spi_clk_pos_gated;
       end
-      2'b10 : begin
+      2'b10 :
+      begin
         spi_data_sample = spi_clk_neg_gated;
         spi_data_change = spi_clk_pos_gated;
       end
-      2'b11 : begin
+      2'b11 :
+      begin
         spi_data_sample = spi_clk_pos_gated;
         spi_data_change = spi_clk_neg_gated;
-      end 
-      default : begin
+      end
+      default :
+      begin
         spi_data_sample = spi_clk_neg_gated;
         spi_data_change = spi_clk_pos_gated;
       end
@@ -86,18 +92,23 @@ module spi_reg #(
 
   // FSM states type
   typedef enum logic [2:0] {
-    STATE_IDLE, STATE_ADDR, STATE_CMD, STATE_RX_DATA, STATE_TX_DATA
-  } fsm_state;
+            STATE_IDLE, STATE_ADDR, STATE_CMD, STATE_RX_DATA, STATE_TX_DATA
+          } fsm_state;
 
   // FSM states
   fsm_state state, next_state;
 
   // Next state transition
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       state <= STATE_IDLE;
-    end else begin
-      if (ena == 1'b1) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
         state <= next_state;
       end
     end
@@ -109,7 +120,8 @@ module spi_reg #(
   logic sample_data;
 
   // Next state logic
-  always_comb begin
+  always_comb
+  begin
     // default assignments
     next_state = state;
     tx_buffer_load = 1'b0;
@@ -117,46 +129,69 @@ module spi_reg #(
     sample_data = 1'b0;
 
     case (state)
-      STATE_IDLE : begin
-        if (sof == 1'b1) begin
+      STATE_IDLE :
+      begin
+        if (sof == 1'b1)
+        begin
           next_state = STATE_ADDR;
         end
       end
-      STATE_ADDR : begin
-        if (rx_buffer_counter == 4'd8) begin
+      STATE_ADDR :
+      begin
+        if (rx_buffer_counter == 4'd8)
+        begin
           sample_addr = 1'b1;
           next_state = STATE_CMD;
-        end else if (eof == 1'b1) begin
+        end
+        else if (eof == 1'b1)
+        begin
           next_state = STATE_IDLE;
         end
       end
-      STATE_CMD : begin
-        if (reg_rw == 1'b0) begin
+      STATE_CMD :
+      begin
+        if (reg_rw == 1'b0)
+        begin
           next_state = STATE_TX_DATA;
-        end else if (reg_rw == 1'b1) begin
+        end
+        else if (reg_rw == 1'b1)
+        begin
           next_state = STATE_RX_DATA;
-        end else if (eof == 1'b1) begin
+        end
+        else if (eof == 1'b1)
+        begin
           next_state = STATE_IDLE;
         end
       end
-      STATE_RX_DATA : begin
-        if (rx_buffer_counter == 4'd8) begin
+      STATE_RX_DATA :
+      begin
+        if (rx_buffer_counter == 4'd8)
+        begin
           sample_data = 1'b1;
           next_state = STATE_IDLE;
-        end else if (eof == 1'b1) begin
+        end
+        else if (eof == 1'b1)
+        begin
           next_state = STATE_IDLE;
         end
       end
-      STATE_TX_DATA : begin
-        if (tx_buffer_counter == 4'd0) begin
+      STATE_TX_DATA :
+      begin
+        if (tx_buffer_counter == 4'd0)
+        begin
           tx_buffer_load = 1'b1;
-        end else if (tx_buffer_counter == 4'd8) begin
+        end
+        else if (tx_buffer_counter == 4'd8)
+        begin
           next_state = STATE_IDLE;
-        end else if (eof == 1'b1) begin
+        end
+        else if (eof == 1'b1)
+        begin
           next_state = STATE_IDLE;
         end
       end
-      default : begin
+      default :
+      begin
         next_state = STATE_IDLE;
       end
     endcase
@@ -166,12 +201,18 @@ module spi_reg #(
   logic [REG_W-1:0] rx_buffer;
 
   // RX Buffer
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       rx_buffer <= '0;
-    end else begin
-      if (ena == 1'b1) begin
-        if (spi_data_sample == 1'b1) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
+        if (spi_data_sample == 1'b1)
+        begin
           rx_buffer <= {rx_buffer[REG_W-2:0], spi_mosi};
         end
       end
@@ -182,14 +223,22 @@ module spi_reg #(
   logic [3:0] rx_buffer_counter;
 
   // RX Buffer Counter
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       rx_buffer_counter <= '0;
-    end else begin
-      if (ena == 1'b1) begin
-        if (rx_buffer_counter == 4'd8) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
+        if (rx_buffer_counter == 4'd8)
+        begin
           rx_buffer_counter <= '0;
-        end else if (spi_data_sample == 1'b1) begin
+        end
+        else if (spi_data_sample == 1'b1)
+        begin
           rx_buffer_counter <= rx_buffer_counter + 1'b1;
         end
       end
@@ -201,13 +250,19 @@ module spi_reg #(
   logic reg_rw;
 
   // Addr and Read/Write Command Registers
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       addr <= '0;
       reg_rw <= '0;
-    end else begin
-      if (ena == 1'b1) begin
-        if (sample_addr == 1'b1) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
+        if (sample_addr == 1'b1)
+        begin
           addr <= rx_buffer[ADDR_W-1:0];
           reg_rw <= rx_buffer[REG_W-1];
         end
@@ -219,15 +274,21 @@ module spi_reg #(
   logic [REG_W-1:0] data;
   logic dv;
 
-    // Data and DataValid (dv) Registers
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  // Data and DataValid (dv) Registers
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       data <= '0;
       dv <= '0;
-    end else begin
-      if (ena == 1'b1) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
         dv <= '0;
-        if (sample_data == 1'b1) begin
+        if (sample_data == 1'b1)
+        begin
           data <= rx_buffer;
           dv <= (1'b1 & reg_rw);
         end
@@ -237,36 +298,54 @@ module spi_reg #(
 
   // TX General counter
   logic [3:0] tx_buffer_counter;
-    
+
   // TX Buffer counter
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       tx_buffer_counter <= '0;
-    end else begin
-      if (ena == 1'b1) begin
-        if (tx_buffer_counter == 4'd8) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
+        if (tx_buffer_counter == 4'd8)
+        begin
           tx_buffer_counter <= '0;
-        end else if (spi_data_sample == 1'b1) begin
+        end
+        else if (spi_data_sample == 1'b1)
+        begin
           tx_buffer_counter <= tx_buffer_counter + 1'b1;
         end
       end
     end
-  end 
+  end
 
   // TX Buffer
   logic [REG_W-1:0] tx_buffer;
 
   // TX Buffer
-  always_ff @(negedge(rstb) or posedge(clk)) begin
-    if (!rstb) begin
+  always_ff @(negedge(rstb) or posedge(clk))
+  begin
+    if (!rstb)
+    begin
       tx_buffer <= '0;
-    end else begin
-      if (ena == 1'b1) begin
-        if (sof == 1'b1) begin
+    end
+    else
+    begin
+      if (ena == 1'b1)
+      begin
+        if (sof == 1'b1)
+        begin
           tx_buffer <= status;
-        end else if (tx_buffer_load == 1'b1) begin
+        end
+        else if (tx_buffer_load == 1'b1)
+        begin
           tx_buffer <= reg_data_i;
-        end else if (spi_data_change == 1'b1) begin
+        end
+        else if (spi_data_change == 1'b1)
+        begin
           tx_buffer <= {tx_buffer[REG_W-2:0], 1'b0};
         end
       end

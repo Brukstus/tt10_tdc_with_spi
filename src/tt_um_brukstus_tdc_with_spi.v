@@ -32,6 +32,8 @@ module tt_um_brukstus_tdc_with_spi (
   wire cpol_sync;
   wire cpha_sync;
 
+  wire [2:0] dummy_signal;
+
   // Bi direction IOs [6:4] as inputs
   assign uio_oe[6:4] = 3'b000;
   // Bi direction IOs [7] and [3:0] as outputs
@@ -51,6 +53,9 @@ module tt_um_brukstus_tdc_with_spi (
   // Unused ouputs needs to be assigned to 0.
   assign uio_out[2:0] = 3'b000;
   assign uio_out[7:4] = 4'b0000;
+
+  // Unused inputs.
+  assign dummy_signal = ui_in[7:5];
 
   // Number of stages in each synchronizer
   localparam int SYNC_STAGES = 2;
@@ -75,14 +80,14 @@ module tt_um_brukstus_tdc_with_spi (
   wire [31:0] coarse_result;
   wire [8:0] fine_result;
 
-  // todo - set these to be some read only part of your design
-  assign status_regs[31:0]   = 32'h78B36425;
-  assign status_regs[63:32]  = 32'hDEADBEEF;
-  assign status_regs[95:64] = coarse_result;
-  assign status_regs[127:96] = {23'b0, fine_result};
+  // Status registers.
+  assign status_regs[31:0]   = 32'h78B36425;         // [0]
+  assign status_regs[63:32]  = 32'hDEADBEEF;         // [1]
+  assign status_regs[95:64]  = coarse_result;        // [2]
+  assign status_regs[127:96] = {23'b0, fine_result}; // [3]
 
 
-  // SPI wrapper
+  // SPI wrapper.
   spi_wrapper #(.NUM_CFG(NUM_CFG), .NUM_STATUS(NUM_STATUS), .REG_WIDTH(REG_WIDTH)) spi_wrapper_i (.rstb(rst_n), .clk(clk), .ena(ena), .mode({cpol_sync, cpha_sync}), .spi_cs_n(spi_cs_n_sync), .spi_clk(spi_clk_sync), .spi_mosi(spi_mosi_sync), .spi_miso(spi_miso), .config_regs(config_regs), .status_regs(status_regs));
 
   // TDC part.
@@ -96,6 +101,5 @@ module tt_um_brukstus_tdc_with_spi (
         .coarse_result(coarse_result),
         .fine_result(fine_result)
       );
-
 
 endmodule
