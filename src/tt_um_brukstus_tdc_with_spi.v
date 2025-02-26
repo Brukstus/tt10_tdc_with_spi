@@ -71,7 +71,7 @@ module tt_um_brukstus_tdc_with_spi (
   // Amount of CFG Regs and Status Regs + Regs Width
   localparam int NUM_CFG = 4;
   localparam int NUM_STATUS = NUM_CFG;
-  localparam int REG_WIDTH = 32;
+  localparam int REG_WIDTH = 8;
 
   // Config Regs and Status Regs
   wire [NUM_CFG*REG_WIDTH-1:0] config_regs;
@@ -82,9 +82,9 @@ module tt_um_brukstus_tdc_with_spi (
 
   // Status registers.
   assign status_regs[31:0]   = 32'h78B36425;         // [0]
-  assign status_regs[63:32]  = 32'hDEADBEEF;         // [1]
-  assign status_regs[95:64]  = coarse_result;        // [2]
-  assign status_regs[127:96] = {23'b0, fine_result}; // [3]
+  // assign status_regs[63:32]  = 32'hDEADBEEF;         // [1]
+  // assign status_regs[95:64]  = coarse_result;        // [2]
+  // assign status_regs[127:96] = {23'b0, fine_result}; // [3]
 
 
   // SPI wrapper.
