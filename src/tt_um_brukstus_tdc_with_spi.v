@@ -69,7 +69,7 @@ module tt_um_brukstus_tdc_with_spi (
   synchronizer #(.STAGES(SYNC_STAGES), .WIDTH(SYNC_WIDTH)) synchronizer_spi_mode_cpha (.rstb(rst_n), .clk(clk), .ena(ena), .data_in(cpha), .data_out(cpha_sync));
 
   // Amount of CFG Regs and Status Regs + Regs Width
-  localparam int NUM_CFG = 4;
+  localparam int NUM_CFG = 8;
   localparam int NUM_STATUS = NUM_CFG;
   localparam int REG_WIDTH = 8;
 
@@ -81,10 +81,14 @@ module tt_um_brukstus_tdc_with_spi (
   wire [8:0] fine_result;
 
   // Status registers.
-  assign status_regs[31:0]   = 32'h78B36425;         // [0]
+  // assign status_regs[31:0]   = 32'h78B36425;         // [0]
   // assign status_regs[63:32]  = 32'hDEADBEEF;         // [1]
   // assign status_regs[95:64]  = coarse_result;        // [2]
   // assign status_regs[127:96] = {23'b0, fine_result}; // [3]
+
+  assign status_regs[31:0]  = coarse_result;        // [0][1][2][3]
+  assign status_regs[40:32] = fine_result; // [4][5]
+  assign status_regs[63:41] = 23'b0; // [5][6][7]
 
 
   // SPI wrapper.
