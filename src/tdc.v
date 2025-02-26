@@ -90,13 +90,14 @@ module tdc  (
 
   always @(posedge clk or posedge rst_n)
   begin
-    if(!rst_n)
+    if(rst_n == 0)
     begin
       reset_internal_logic <= 0;
       fine_procedure_counter <= 9'b0;
       fine_another_counter <= 9'b0;
       fine_start_counter <= 9'b0;
       fine_stop_counter <= 9'b0;
+      coarse_result <= 32'b0;
     end
     else if (stop_signal_activated)
     begin
