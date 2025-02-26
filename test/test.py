@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
+# SPDX-FileCopyrightText: © 2025 Tiny Tapeout
 # SPDX-License-Identifier: MIT
 
 import random
@@ -108,7 +108,7 @@ async def spi_write (clk, port, address, data):
     await ClockCycles(clk, 10)
     iterator -= 1
 
-  iterator = 7
+  iterator = 31
   while iterator >= 0:
     # Data[iterator]
     temp = port.value;
@@ -189,7 +189,7 @@ async def spi_read (clk, port_in, port_out, address, data):
   miso_byte = 0
   miso_bit = 0
 
-  iterator = 7
+  iterator = 31
   while iterator >= 0:
     # Data[iterator]
     temp = port_in.value;
@@ -267,7 +267,7 @@ async def spi_write_cpha0 (clk, port, address, data):
     await ClockCycles(clk, 10)
     iterator -= 1
 
-  iterator = 7
+  iterator = 31
   while iterator >= 0:
     # Data[iterator]
     temp = port.value;
@@ -328,7 +328,7 @@ async def spi_read_cpha0 (clk, port_in, port_out, address, data):
     await ClockCycles(clk, 10)
     iterator += 1
 
-  iterator = 3
+  iterator = 31
   while iterator >= 0:
     # Address[iterator] - bit 3, bit 2, bit 1 and bit 0
     temp = port_in.value;
@@ -425,14 +425,14 @@ async def test_project(dut):
     iterations = 0
 
     while iterations < 10:
-        data0 = random.randint(0x00, 0xFF)
-        data1 = random.randint(0x00, 0xFF)
-        data2 = random.randint(0x00, 0xFF)
-        data3 = random.randint(0x00, 0xFF)
-        data4 = random.randint(0x00, 0xFF)
-        data5 = random.randint(0x00, 0xFF)
-        data6 = random.randint(0x00, 0xFF)
-        data7 = random.randint(0x00, 0xFF)
+        data0 = random.randint(0x00000000, 0xFFFFFFFF)
+        data1 = random.randint(0x00000000, 0xFFFFFFFF)
+        data2 = random.randint(0x00000000, 0xFFFFFFFF)
+        data3 = random.randint(0x00000000, 0xFFFFFFFF)
+        data4 = random.randint(0x00000000, 0xFFFFFFFF)
+        data5 = random.randint(0x00000000, 0xFFFFFFFF)
+        data6 = random.randint(0x00000000, 0xFFFFFFFF)
+        data7 = random.randint(0x00000000, 0xFFFFFFFF)
 
         # Write reg[0] = 0xF0
         await spi_write (dut.clk, dut.uio_in, 0, data0)
@@ -454,9 +454,9 @@ async def test_project(dut):
         """
 
         # Read reg[0]
-        reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00)
+        reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00000000)
         # Read reg[1]
-        reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00)
+        reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00000000)
         """
         # Read reg[2]
         reg2 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 2, 0x00)
@@ -472,9 +472,9 @@ async def test_project(dut):
         reg7 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 7, 0x00)
         """
         # Read status reg[0]
-        s_reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00)
+        s_reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00000000)
         # Read status reg[1]
-        s_reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00)
+        s_reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00000000)
         # Read status reg[2]
         """
         s_reg2 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 10, 0x00)
@@ -539,8 +539,8 @@ async def test_project(dut):
     iterations = 0
 
     while iterations < 10:
-        data0 = random.randint(0x00, 0xFF)
-        data1 = random.randint(0x00, 0xFF)
+        data0 = random.randint(0x00000000, 0xFFFFFFFF)
+        data1 = random.randint(0x00000000, 0xFFFFFFFF)
         """
         data2 = random.randint(0x00, 0xFF)
         data3 = random.randint(0x00, 0xFF)
@@ -569,9 +569,9 @@ async def test_project(dut):
         await spi_write (dut.clk, dut.uio_in, 7, data7)
         """
         # Read reg[0]
-        reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00)
+        reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00000000)
         # Read reg[1]
-        reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00)
+        reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00000000)
         """
         # Read reg[2]
         reg2 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 2, 0x00)
@@ -587,9 +587,9 @@ async def test_project(dut):
         reg7 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 7, 0x00)
         """
         # Read status reg[0]
-        s_reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00)
+        s_reg0 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00000000)
         # Read status reg[1]
-        s_reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00)
+        s_reg1 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00000000)
         """
         # Read status reg[2]
         s_reg2 = await spi_read (dut.clk, dut.uio_in, dut.uio_out, 10, 0x00)
@@ -654,14 +654,14 @@ async def test_project(dut):
     iterations = 0
 
     while iterations < 10:
-        data0 = random.randint(0x00, 0xFF)
-        data1 = random.randint(0x00, 0xFF)
-        data2 = random.randint(0x00, 0xFF)
-        data3 = random.randint(0x00, 0xFF)
-        data4 = random.randint(0x00, 0xFF)
-        data5 = random.randint(0x00, 0xFF)
-        data6 = random.randint(0x00, 0xFF)
-        data7 = random.randint(0x00, 0xFF)
+        data0 = random.randint(0x00000000, 0xFFFFFFFF)
+        data1 = random.randint(0x00000000, 0xFFFFFFFF)
+        data2 = random.randint(0x00000000, 0xFFFFFFFF)
+        data3 = random.randint(0x00000000, 0xFFFFFFFF)
+        data4 = random.randint(0x00000000, 0xFFFFFFFF)
+        data5 = random.randint(0x00000000, 0xFFFFFFFF)
+        data6 = random.randint(0x00000000, 0xFFFFFFFF)
+        data7 = random.randint(0x00000000, 0xFFFFFFFF)
 
         # Write reg[0] = 0xF0
         await spi_write_cpha0 (dut.clk, dut.uio_in, 0, data0)
@@ -682,9 +682,9 @@ async def test_project(dut):
         await spi_write_cpha0 (dut.clk, dut.uio_in, 7, data7)
         """ 
         # Read reg[0]
-        reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00)
+        reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00000000)
         # Read reg[1]
-        reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00)
+        reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00000000)
         """
         # Read reg[2]
         reg2 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 2, 0x00)
@@ -701,9 +701,9 @@ async def test_project(dut):
         """
 
         # Read status reg[0]
-        s_reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00)
+        s_reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00000000)
         # Read status reg[1]
-        s_reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00)
+        s_reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00000000)
         """
         # Read status reg[2]
         s_reg2 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 10, 0x00)
@@ -768,8 +768,8 @@ async def test_project(dut):
     iterations = 0
 
     while iterations < 10:
-        data0 = random.randint(0x00, 0xFF)
-        data1 = random.randint(0x00, 0xFF)
+        data0 = random.randint(0x00000000, 0xFFFFFFFF)
+        data1 = random.randint(0x00000000, 0xFFFFFFFF)
         """
         data2 = random.randint(0x00, 0xFF)
         data3 = random.randint(0x00, 0xFF)
@@ -799,9 +799,9 @@ async def test_project(dut):
         """
 
         # Read reg[0]
-        reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00)
+        reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 0, 0x00000000)
         # Read reg[1]
-        reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00)
+        reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 1, 0x00000000)
         # Read reg[2]
         """
         reg2 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 2, 0x00)
@@ -818,9 +818,9 @@ async def test_project(dut):
         """
 
         # Read status reg[0]
-        s_reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00)
+        s_reg0 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 8, 0x00000000)
         # Read status reg[1]
-        s_reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00)
+        s_reg1 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 9, 0x00000000)
         # Read status reg[2]
         """
         s_reg2 = await spi_read_cpha0 (dut.clk, dut.uio_in, dut.uio_out, 10, 0x00)
