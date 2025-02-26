@@ -88,7 +88,7 @@ module tdc  (
     end
   end
 
-  always @(posedge clk or posedge rst_n)
+  always @(posedge clk)
   begin
     if(rst_n == 0)
     begin
